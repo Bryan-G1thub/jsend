@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promisify } from 'util';
 import { resolve } from 'dns';
+import { DomainCheckResult, CheckResult } from '@/types/domain-check';
 
 const dnsResolve = promisify(resolve);
 
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
     // Clean the domain (remove protocol, www, etc.)
     const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
     
-    const results = {
+    const results: DomainCheckResult = {
       domain: cleanDomain,
       timestamp: new Date().toISOString(),
       checks: {

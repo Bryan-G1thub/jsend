@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { DomainCheckResult, DomainCheckError } from '@/types/domain-check';
 
 export default function Home() {
   const [domain, setDomain] = useState('');
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState<DomainCheckResult | DomainCheckError | null>(null);
 
   const handleCheckDomain = async () => {
     if (!domain.trim()) return;
@@ -56,12 +57,12 @@ export default function Home() {
             </div>
             <h1 className="text-8xl font-bold bg-gradient-to-r from-red-500 via-orange-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-8 leading-tight">
               Domain Checker
-            </h1>
+          </h1>
             <p className="text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Verify your domain's email deliverability and security settings
-            </p>
-          </div>
-
+          </p>
+        </div>
+        
           {/* Main Card */}
           <div className="bg-black/80 backdrop-blur-xl rounded-3xl shadow-2xl p-16 border border-gray-800">
             <div className="max-w-3xl mx-auto">
@@ -71,9 +72,9 @@ export default function Home() {
                     Enter your domain name
                   </label>
                   <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="example.com"
+            <input
+              type="text"
+              placeholder="example.com"
                       value={domain}
                       onChange={(e) => setDomain(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleCheckDomain()}
@@ -110,13 +111,13 @@ export default function Home() {
               </div>
             </div>
           </div>
-
+          
           {/* Results Section */}
           {results && (
             <div className="mt-12 bg-black/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-gray-800">
               <h2 className="text-3xl font-bold text-white mb-8 text-center">Domain Analysis Results</h2>
               
-              {results.error ? (
+              {'error' in results ? (
                 <div className="text-center text-red-400 text-xl">
                   {results.error}
                 </div>
