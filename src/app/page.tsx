@@ -1,4 +1,35 @@
+'use client';
+
+import { useState } from 'react';
+
 export default function Home() {
+  const [domain, setDomain] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState(null);
+
+  const handleCheckDomain = async () => {
+    if (!domain.trim()) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/check-domain', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ domain: domain.trim() }),
+      });
+      
+      const data = await response.json();
+      setResults(data);
+    } catch (error) {
+      console.error('Error checking domain:', error);
+      setResults({ error: 'Failed to check domain. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Rainbow gradient orbs - Led Zeppelin style */}
@@ -43,6 +74,9 @@ export default function Home() {
                     <input
                       type="text"
                       placeholder="example.com"
+                      value={domain}
+                      onChange={(e) => setDomain(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleCheckDomain()}
                       className="w-full px-8 py-6 text-2xl bg-gray-900/50 border-2 border-gray-700 rounded-2xl 
                         text-white placeholder:text-gray-500 focus:outline-none focus:ring-4 
                         focus:ring-rainbow-500/50 focus:border-rainbow-400 transition-all duration-300
@@ -52,21 +86,150 @@ export default function Home() {
                   </div>
                 </div>
 
-                <button className="w-full py-6 px-10 bg-gradient-to-r from-red-500 via-orange-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-indigo-500 via-purple-500 to-pink-500 
-                  text-white text-2xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl 
-                  transition-all duration-300 transform hover:scale-105 hover:-translate-y-1
-                  relative overflow-hidden group border-2 border-gray-700">
+                <button 
+                  onClick={handleCheckDomain}
+                  disabled={loading || !domain.trim()}
+                  className="w-full py-6 px-10 bg-gradient-to-r from-red-500 via-orange-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-indigo-500 via-purple-500 to-pink-500 
+                    text-white text-2xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl 
+                    transition-all duration-300 transform hover:scale-105 hover:-translate-y-1
+                    relative overflow-hidden group border-2 border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
                   <span className="relative z-10 flex items-center justify-center">
-                    <svg className="w-8 h-8 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    Check Domain
+                    {loading ? (
+                      <svg className="w-8 h-8 mr-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    ) : (
+                      <svg className="w-8 h-8 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    )}
+                    {loading ? 'Checking...' : 'Check Domain'}
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-red-500 via-orange-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Results Section */}
+          {results && (
+            <div className="mt-12 bg-black/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-gray-800">
+              <h2 className="text-3xl font-bold text-white mb-8 text-center">Domain Analysis Results</h2>
+              
+              {results.error ? (
+                <div className="text-center text-red-400 text-xl">
+                  {results.error}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl font-semibold text-white mb-2">Domain: {results.domain}</h3>
+                    <p className="text-gray-400">Checked at: {new Date(results.timestamp).toLocaleString()}</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* SPF Record */}
+                    <div className="bg-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                      <div className="flex items-center mb-4">
+                        <div className={`w-4 h-4 rounded-full mr-3 ${
+                          results.checks.spf?.status === 'found' ? 'bg-green-500' : 
+                          results.checks.spf?.status === 'missing' ? 'bg-red-500' : 'bg-yellow-500'
+                        }`}></div>
+                        <h4 className="text-xl font-semibold text-white">SPF Record</h4>
+                      </div>
+                      <p className="text-gray-300 mb-2">{results.checks.spf?.message}</p>
+                      {results.checks.spf?.record && (
+                        <div className="bg-black/50 rounded p-3 text-sm text-gray-400 font-mono break-all">
+                          {results.checks.spf.record}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* DKIM Record */}
+                    <div className="bg-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                      <div className="flex items-center mb-4">
+                        <div className={`w-4 h-4 rounded-full mr-3 ${
+                          results.checks.dkim?.status === 'found' ? 'bg-green-500' : 
+                          results.checks.dkim?.status === 'missing' ? 'bg-red-500' : 'bg-yellow-500'
+                        }`}></div>
+                        <h4 className="text-xl font-semibold text-white">DKIM Record</h4>
+                      </div>
+                      <p className="text-gray-300 mb-2">{results.checks.dkim?.message}</p>
+                      {results.checks.dkim?.record && (
+                        <div className="bg-black/50 rounded p-3 text-sm text-gray-400 font-mono break-all">
+                          {results.checks.dkim.record}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* DMARC Record */}
+                    <div className="bg-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                      <div className="flex items-center mb-4">
+                        <div className={`w-4 h-4 rounded-full mr-3 ${
+                          results.checks.dmarc?.status === 'found' ? 'bg-green-500' : 
+                          results.checks.dmarc?.status === 'missing' ? 'bg-red-500' : 'bg-yellow-500'
+                        }`}></div>
+                        <h4 className="text-xl font-semibold text-white">DMARC Record</h4>
+                      </div>
+                      <p className="text-gray-300 mb-2">{results.checks.dmarc?.message}</p>
+                      {results.checks.dmarc?.record && (
+                        <div className="bg-black/50 rounded p-3 text-sm text-gray-400 font-mono break-all">
+                          {results.checks.dmarc.record}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* MX Records */}
+                    <div className="bg-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                      <div className="flex items-center mb-4">
+                        <div className={`w-4 h-4 rounded-full mr-3 ${
+                          results.checks.mx?.status === 'found' ? 'bg-green-500' : 
+                          results.checks.mx?.status === 'missing' ? 'bg-red-500' : 'bg-yellow-500'
+                        }`}></div>
+                        <h4 className="text-xl font-semibold text-white">MX Records</h4>
+                      </div>
+                      <p className="text-gray-300 mb-2">{results.checks.mx?.message}</p>
+                      {results.checks.mx?.records && (
+                        <div className="space-y-2">
+                          {results.checks.mx.records.map((record, index) => (
+                            <div key={index} className="bg-black/50 rounded p-2 text-sm text-gray-400 font-mono">
+                              {record}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Domain Resolution */}
+                  <div className="bg-gray-900/50 rounded-2xl p-6 border border-gray-700">
+                    <div className="flex items-center mb-4">
+                      <div className={`w-4 h-4 rounded-full mr-3 ${
+                        results.checks.domainResolution?.status === 'valid' ? 'bg-green-500' : 'bg-red-500'
+                      }`}></div>
+                      <h4 className="text-xl font-semibold text-white">Domain Resolution</h4>
+                    </div>
+                    <p className="text-gray-300">{results.checks.domainResolution?.message}</p>
+                  </div>
+
+                  {/* Summary */}
+                  {results.errors.length > 0 && (
+                    <div className="bg-red-900/20 border border-red-500/50 rounded-2xl p-6">
+                      <h4 className="text-xl font-semibold text-red-400 mb-4">Issues Found:</h4>
+                      <ul className="space-y-2">
+                        {results.errors.map((error, index) => (
+                          <li key={index} className="text-red-300 flex items-center">
+                            <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                            {error}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
