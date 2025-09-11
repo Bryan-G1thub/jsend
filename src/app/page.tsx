@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { DomainCheckResult, DomainCheckError } from '@/types/domain-check';
+import { DomainCheckResult, DomainCheckError, MxRecord } from '@/types/domain-check';
 
 export default function Home() {
   const [domain, setDomain] = useState('');
@@ -192,9 +192,9 @@ export default function Home() {
                       <p className="text-gray-300 mb-2">{results.checks.mx?.message}</p>
                       {results.checks.mx?.records && (
                         <div className="space-y-2">
-                          {results.checks.mx.records.map((record, index) => (
+                          {(results.checks.mx.records as MxRecord[]).map((record, index) => (
                             <div key={index} className="bg-black/50 rounded p-2 text-sm text-gray-400 font-mono">
-                              {record}
+                              Priority: {record.priority} - {record.exchange}
                             </div>
                           ))}
                         </div>

@@ -15,8 +15,13 @@ export interface CheckResult {
   status: 'found' | 'missing' | 'error' | 'valid' | 'invalid';
   message: string;
   record?: string;
-  records?: string[];
+  records?: string[] | MxRecord[];
   selector?: string;
+}
+
+export interface MxRecord {
+  priority: number;
+  exchange: string;
 }
 
 export interface DomainCheckError {
