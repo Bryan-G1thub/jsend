@@ -41,11 +41,11 @@ export async function POST(request: NextRequest) {
     // Check SPF record
     try {
       const spfRecords = await dnsResolve(cleanDomain, 'TXT');
-      const spfRecord = spfRecords.find(record => record.startsWith('v=spf1'));
+      const spfRecord = spfRecords.find((record: string[]) => record[0].startsWith('v=spf1'));
       if (spfRecord) {
         results.checks.spf = { 
           status: 'found', 
-          record: spfRecord,
+          record: spfRecord[0],
           message: 'SPF record found'
         };
       } else {
@@ -63,11 +63,11 @@ export async function POST(request: NextRequest) {
     // Check DMARC record
     try {
       const dmarcRecords = await dnsResolve(`_dmarc.${cleanDomain}`, 'TXT');
-      const dmarcRecord = dmarcRecords.find(record => record.startsWith('v=DMARC1'));
+      const dmarcRecord = dmarcRecords.find((record: string[]) => record[0].startsWith('v=DMARC1'));
       if (dmarcRecord) {
         results.checks.dmarc = { 
           status: 'found', 
-          record: dmarcRecord,
+          record: dmarcRecord[0],
           message: 'DMARC record found'
         };
       } else {
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
             results.checks.dkim = { 
               status: 'found', 
               selector: selector,
-              record: dkimRecord,
+              record: dkimRecord[0],
               message: `DKIM record found for selector: ${selector}`
             };
             dkimFound = true;
