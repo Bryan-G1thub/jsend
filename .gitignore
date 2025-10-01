@@ -33,6 +33,13 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# OAuth credentials and sensitive config
+src/config/oauth.ts
+
+# Firebase service account JSON files (contains private keys)
+*firebase-adminsdk*.json
+jmail-c6d93-firebase-adminsdk-fbsvc-d56baad133.json
+
 # vercel
 .vercel
 

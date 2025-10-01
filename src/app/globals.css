@@ -21,3 +21,80 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Monochrome corporate theme */
+:root {
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+  --muted: #6b7280; /* gray-500 */
+  --border: #d1d5db; /* gray-300 - higher contrast */
+  --accent: #111111; /* near-black for focus outlines */
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+}
+
+/* Typography scale */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--fg);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; }
+h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 700; }
+h3 { font-size: clamp(1.25rem, 3vw, 1.5rem); font-weight: 700; }
+
+p { margin: 0 0 1rem 0; color: var(--muted); }
+
+/* Links */
+a {
+  color: var(--fg);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Layout helpers */
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Card */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* Inputs and buttons */
+input[type="text"],
+input[type="email"],
+input[type="search"],
+button {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+input::placeholder { color: #9ca3af; }
+
+button {
+  background: var(--fg);
+  color: #fff;
+}
+
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Focus states */
+:where(a, button, input, textarea):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
