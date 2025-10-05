@@ -34,7 +34,7 @@ yarn-error.log*
 .env*
 
 # OAuth credentials and sensitive config
-src/config/oauth.ts
+# Note: oauth.ts is now safe to commit as it only uses environment variables
 
 # Firebase service account JSON files (contains private keys)
 *firebase-adminsdk*.json

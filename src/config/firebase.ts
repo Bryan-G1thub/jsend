@@ -11,10 +11,15 @@ if (!admin.apps.length) {
     // Check if we have environment variables for Firebase credentials
     if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
       // Use environment variables (preferred for production)
+      const privateKey = process.env.FIREBASE_PRIVATE_KEY
+        .replace(/\\n/g, '\n')
+        .replace(/"/g, '')
+        .trim();
+      
       credential = admin.credential.cert({
         projectId: process.env.FIREBASE_PROJECT_ID || "jmail-c6d93",
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        privateKey: privateKey,
       });
     } else {
       // Fallback to service account file (for development)
