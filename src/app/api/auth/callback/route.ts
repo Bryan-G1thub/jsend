@@ -81,21 +81,23 @@ export async function GET(req: NextRequest) {
       success: true,
     });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("❌ Error in OAuth callback:", err);
     
     // Return more specific error messages
-    if (err.message?.includes("invalid_grant")) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    
+    if (errorMessage.includes("invalid_grant")) {
       return NextResponse.json({ error: "Authorization code expired or invalid" }, { status: 400 });
     }
     
-    if (err.message?.includes("access_denied")) {
+    if (errorMessage.includes("access_denied")) {
       return NextResponse.json({ error: "User denied access" }, { status: 403 });
     }
 
     return NextResponse.json({ 
       error: "Authentication failed", 
-      details: process.env.NODE_ENV === "development" ? err.message : undefined 
+      details: process.env.NODE_ENV === "development" ? errorMessage : undefined 
     }, { status: 500 });
   }
 }

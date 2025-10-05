@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { GOOGLE_OAUTH_CONFIG } from "@/config/oauth";
 import { randomBytes } from "crypto";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const oauth2Client = new google.auth.OAuth2(
       GOOGLE_OAUTH_CONFIG.clientId,

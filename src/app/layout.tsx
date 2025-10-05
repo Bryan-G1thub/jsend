@@ -1,4 +1,5 @@
 import "./globals.css";
+import Link from "next/link";
 
 export default function RootLayout({
   children,
@@ -12,8 +13,8 @@ export default function RootLayout({
           <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ fontWeight: 800 }}>Inbox Placement</div>
             <nav style={{ display: "flex", gap: "1rem" }}>
-              <a href="/" aria-label="Home">Home</a>
-              <a href="/" aria-label="Docs">Docs</a>
+              <Link href="/" aria-label="Home">Home</Link>
+              <Link href="/" aria-label="Docs">Docs</Link>
             </nav>
           </div>
         </header>

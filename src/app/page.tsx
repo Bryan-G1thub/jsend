@@ -36,7 +36,7 @@ export default function Home() {
       <section className="card" style={{ padding: "2rem" }}>
         <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
           <h1>Domain Checker</h1>
-          <p>Verify your domain's email deliverability and security settings.</p>
+          <p>Verify your domain&apos;s email deliverability and security settings.</p>
         </div>
         <div style={{ display: "flex", gap: "0.75rem" }}>
           <input

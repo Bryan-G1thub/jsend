@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promisify } from 'util';
 import { resolve } from 'dns';
-import { DomainCheckResult, CheckResult } from '@/types/domain-check';
+import { DomainCheckResult } from '@/types/domain-check';
 
 const dnsResolve = promisify(resolve);
 
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     try {
       await dnsResolve(cleanDomain, 'A');
       results.checks.domainResolution = { status: 'valid', message: 'Domain resolves correctly' };
-    } catch (error) {
+    } catch {
       results.checks.domainResolution = { status: 'invalid', message: 'Domain does not resolve' };
       results.errors.push('Domain resolution failed');
     }
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         };
         results.errors.push('SPF record missing');
       }
-    } catch (error) {
+    } catch {
       results.checks.spf = { status: 'error', message: 'Could not check SPF record' };
       results.errors.push('SPF check failed');
     }
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         };
         results.errors.push('DMARC record missing');
       }
-    } catch (error) {
+    } catch {
       results.checks.dmarc = { status: 'error', message: 'Could not check DMARC record' };
       results.errors.push('DMARC check failed');
     }
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         };
         results.errors.push('MX records missing');
       }
-    } catch (error) {
+    } catch {
       results.checks.mx = { status: 'error', message: 'Could not check MX records' };
       results.errors.push('MX check failed');
     }
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
             dkimFound = true;
             break;
           }
-        } catch (e) {
+        } catch {
           // Continue to next selector
         }
       }
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
         };
         results.errors.push('DKIM records missing');
       }
-    } catch (error) {
+    } catch {
       results.checks.dkim = { status: 'error', message: 'Could not check DKIM records' };
       results.errors.push('DKIM check failed');
     }
